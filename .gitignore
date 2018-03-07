@@ -40,3 +40,5 @@ nosetests.xml
 tags
 
 .idea/
+*.toml
+*.log
