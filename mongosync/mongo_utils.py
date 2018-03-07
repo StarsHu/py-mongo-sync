@@ -15,21 +15,26 @@ def connect(host, port, **kwargs):
     username = kwargs.get('username', '')
     password = kwargs.get('password', '')
     w = kwargs.get('w', 1)
-    replset_name = get_replica_set_name(host, port, **kwargs)
-    if replset_name:
-        mc = pymongo.MongoClient(
-                host=host,
-                port=port,
-                connect=True,
-                serverSelectionTimeoutMS=3000,
-                replicaSet=replset_name,
-                read_preference=pymongo.read_preferences.ReadPreference.PRIMARY,
-                w=w)
-    else:
-        mc = pymongo.MongoClient(host, port, connect=True, serverSelectionTimeoutMS=3000, w=w)
+    connect_kwarg = {
+        'host': host,
+        'port': port,
+        'connect': False,
+        'serverSelectionTimeoutMS': 5000,
+        'w': w,
+    }
+    # replset_name = get_replica_set_name(host, port, **kwargs)
+    # if replset_name:
+    #     connect_kwarg.update({
+    #         'replicaSet': replset_name,
+    #         'read_preference': pymongo.read_preferences.ReadPreference.PRIMARY,
+    #     })
     if username and password and authdb:
-        # raise exception if auth failed here
-        mc[authdb].authenticate(username, password)
+        connect_kwarg.update({
+            'username': username,
+            'password': password,
+            'authSource': authdb,
+        })
+    mc = pymongo.MongoClient(**connect_kwarg)
     return mc
 
 
@@ -58,9 +63,22 @@ def get_replica_set_name(host, port, **kwargs):
         username = kwargs.get('username', '')
         password = kwargs.get('password', '')
         authdb = kwargs.get('authdb', 'admin')
-        mc = pymongo.MongoClient(host, port, connect=True, serverSelectionTimeoutMS=3000)
+        connect_kwarg = {
+            'host': host,
+            'port': port,
+            'connect': True,
+            'serverSelectionTimeoutMS': 3000,
+        }
         if username and password and authdb:
-            mc[authdb].authenticate(username, password)
+            connect_kwarg.update({
+                'username': username,
+                'password': password,
+                'authSource': authdb,
+            })
+        mc = pymongo.MongoClient(**connect_kwarg)
+        # mc = pymongo.MongoClient(host, port, connect=True, serverSelectionTimeoutMS=3000)
+        # if username and password and authdb:
+        #     mc[authdb].authenticate(username, password)
         status = mc.admin.command({'replSetGetStatus': 1})
         mc.close()
         if status['ok'] == 1:
@@ -78,10 +96,20 @@ def get_primary(host, port, **kwargs):
         username = kwargs.get('username', '')
         password = kwargs.get('password', '')
         authdb = kwargs.get('authdb', 'admin')
-        mc = pymongo.MongoClient(host, port, connect=True, serverSelectionTimeoutMS=3000)
+        connect_kwarg = {
+            'host': host,
+            'port': port,
+            'connect': True,
+            'serverSelectionTimeoutMS': 3000,
+        }
         if username and password and authdb:
-            mc[authdb].authenticate(username, password)
-        status = mc.admin.command({'replSetGetStatus': 1})
+            connect_kwarg.update({
+                'username': username,
+                'password': password,
+                'authSource': authdb,
+            })
+        mc = pymongo.MongoClient(**connect_kwarg)
+        status = mc['admin'].command({'replSetGetStatus': 1})
         mc.close()
         if status['ok'] == 1:
             for member in status['members']:

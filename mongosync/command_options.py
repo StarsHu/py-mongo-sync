@@ -31,6 +31,7 @@ class CommandOptions(object):
         parser.add_argument('--logfile', nargs='?', required=False, help='log file path')
 
         args = parser.parse_args()
+        # args.config = 'conf.toml'
 
         if args.config is not None:
             conf = ConfigFile.load(args.config)

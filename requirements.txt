@@ -1,1 +1,4 @@
 pymongo>3.0
+toml
+gevent
+elasticsearch

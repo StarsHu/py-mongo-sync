@@ -1,5 +1,7 @@
 import sys
 import time
+import traceback
+
 import pymongo
 import elasticsearch
 import elasticsearch.helpers
@@ -59,6 +61,7 @@ class Mongo(DB):
                 # TODO
                 return False
         except Exception as e:
+            traceback.print_exc()
             log.error('connect failed: %s' % e)
             return False
 

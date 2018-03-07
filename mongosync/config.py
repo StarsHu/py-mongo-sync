@@ -82,8 +82,8 @@ class Config(object):
             logger.info('src authdb      :  %s' % self.src_conf.authdb)
             logger.info('src username    :  %s' % self.src_conf.username)
             logger.info('src password    :  %s' % self.src_conf.password)
-            if isinstance(self.src_conf.hosts, str) or isinstance(self.src_conf.hosts, unicode):
-                logger.info('src db version  :  %s' % get_version(self.src_conf.hosts))
+            # if isinstance(self.src_conf.hosts, str) or isinstance(self.src_conf.hosts, unicode):
+            #     logger.info('src db version  :  %s' % get_version(self.src_conf.hosts))
 
             logger.info('dst hostportstr :  %s' % self.dst_hostportstr)
             if isinstance(self.dst_conf, MongoConfig):
@@ -91,7 +91,7 @@ class Config(object):
                     logger.info('dst authdb      :  %s' % self.dst_conf.authdb)
                     logger.info('dst username    :  %s' % self.dst_conf.username)
                     logger.info('dst password    :  %s' % self.dst_conf.password)
-                    logger.info('dst db version  :  %s' % get_version(self.dst_conf.hosts))
+                    # logger.info('dst db version  :  %s' % get_version(self.dst_conf.hosts))
 
             logger.info('databases       :  %s' % ', '.join(self.data_filter._related_dbs))
             logger.info('collections     :  %s' % ', '.join(self.data_filter._include_colls))
